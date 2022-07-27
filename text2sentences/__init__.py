@@ -1,13 +1,14 @@
 from .version import __version__
 from .sentence import Sentence
-
-Punctuation = [
+sc_punctuation = [
 	",",
 	".",
 	"?"
 	"!",
 	":",
 	";",
+]
+big_punctuation = [
 	"，",
 	"。",
 	"？",
@@ -21,12 +22,13 @@ class TextParser:
 		self.in_quote = False
 		self.quote = None
 		self.start_pos = 0
+		self.new_paragraph = True
 		
 	def parse(self, text):
 		sentences = []
 		sentext = ''
-		for i,c in enumerate(text):
-			if c == ' ':
+		for i, c in enumerate(text):
+			if c in [' ', '　']:
 				if sentext != '':
 					sentext = f'{sentext} '
 				continue
@@ -35,29 +37,39 @@ class TextParser:
 				continue
 
 			if c == '\n':
-				if self.in_sentence:
-					sentext = f'{sentext} '
-				else:
-					self.new_paragraph = True
-				continue
-
-			if c in ['"', '“']:
-				if self.in_quote and self.quote == c:
-					sentence = Sentence(sentext, 
-									start_pos=self.start_pos,
-									dialog=True)
-					sentences.append(sentence)
-					sentext = ''
-				else:
-					self.in_quote = True
-					self.quote = c
-				continue
-
-			if c in Punctuation:
 				if sentext != '':
 					sentence = Sentence(sentext, 
 									start_pos=self.start_pos,
-									dialog=self.in_quote)
+									dialog=True,
+									new_paragraph=self.new_paragraph)
+					sentences.append(sentence)
+					sentext = ''
+				self.new_paragraph = True
+				continue
+
+			if c in ['"', '“', '”']:
+				if sentext != '':
+					sentence = Sentence(sentext, 
+									start_pos=self.start_pos,
+									dialog=True,
+									new_paragraph=self.new_paragraph)
+					sentences.append(sentence)
+					self.new_paragraph = False
+				sentext = ''
+				if self.in_quote:
+					self.in_quote = False
+				else:
+					self.in_quote = True
+				continue
+
+			if c in sc_punctuation and text[i+1] in [' ', '\r', '\n'] \
+							or c in big_punctuation:
+				if sentext != '':
+					sentence = Sentence(sentext, 
+									start_pos=self.start_pos,
+									dialog=self.in_quote,
+									new_paragraph=self.new_paragraph)
+					self.new_paragraph = False
 					sentences.append(sentence)
 					sentext = ''
 				continue
@@ -67,12 +79,13 @@ class TextParser:
 		if sentext != '':
 			sentence = Sentence(sentext, 
 							start_pos=self.start_pos,
-							dialog=self.in_quote)
+							dialog=self.in_quote,
+							new_paragraph=self.new_paragraph)
 			sentences.append(sentence)
 			sentext = ''
 		return sentences
 				
-def text2sentence(text):
+def text_to_sentences(text):
 	tp = TextParser()
 	s = tp.parse(text)
 	return s
