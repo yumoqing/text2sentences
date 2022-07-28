@@ -1,5 +1,6 @@
 from .version import __version__
 from .sentence import Sentence
+from ftlangdetect import detect
 sc_punctuation = [
 	",",
 	".",
@@ -22,40 +23,58 @@ class TextParser:
 		self.in_quote = False
 		self.quote = None
 		self.start_pos = 0
+		self.sentences = []
+		self.sentence = ''
 		self.new_paragraph = True
 		
+	def add_sentence(self, 
+						start_pos,
+						dialog=None,
+						new_paragraph=False,
+						semi_sentence=False):
+		if self.sentext != '':
+			sentence = Sentence(self.sentext, 
+							start_pos=self.start_pos,
+							dialog=True,
+							semi_sentence=semi_sentence,
+							new_paragraph=self.new_paragraph)
+			sentence.set_lang(self.language['lang'])
+			self.sentences.append(sentence)
+		self.sentext = ''
+
+	def check_text_language(self, text):
+		x = text.replace('\r', '').replace('\n', ' ')
+		self.language = detect(x)
+
 	def parse(self, text):
-		sentences = []
-		sentext = ''
+		self.check_text_language(text)
+		self.sentences = []
+		self.sentext = ''
 		for i, c in enumerate(text):
 			if c in [' ', '　']:
-				if sentext != '':
-					sentext = f'{sentext} '
+				if self.sentext != '':
+					self.sentext = f'{self.sentext} '
 				continue
 
 			if c == '\r':
 				continue
 
 			if c == '\n':
-				if sentext != '':
-					sentence = Sentence(sentext, 
-									start_pos=self.start_pos,
+				if self.sentext != '':
+					self.add_sentence(start_pos=self.start_pos,
 									dialog=True,
+									semi_sentence=False,
 									new_paragraph=self.new_paragraph)
-					sentences.append(sentence)
-					sentext = ''
 				self.new_paragraph = True
 				continue
 
 			if c in ['"', '“', '”']:
-				if sentext != '':
-					sentence = Sentence(sentext, 
-									start_pos=self.start_pos,
+				if self.sentext != '':
+					self.add_sentence(start_pos=self.start_pos,
 									dialog=True,
+									semi_sentence=False,
 									new_paragraph=self.new_paragraph)
-					sentences.append(sentence)
 					self.new_paragraph = False
-				sentext = ''
 				if self.in_quote:
 					self.in_quote = False
 				else:
@@ -64,26 +83,26 @@ class TextParser:
 
 			if c in sc_punctuation and text[i+1] in [' ', '\r', '\n'] \
 							or c in big_punctuation:
-				if sentext != '':
-					sentence = Sentence(sentext, 
-									start_pos=self.start_pos,
+				if self.sentext != '':
+					if c in [',','，','、']:
+						semi = True
+					else:
+						semi = False
+					self.add_sentence(start_pos=self.start_pos,
 									dialog=self.in_quote,
+									semi_sentence=semi,
 									new_paragraph=self.new_paragraph)
 					self.new_paragraph = False
-					sentences.append(sentence)
-					sentext = ''
 				continue
-			if sentext == '':
+			if self.sentext == '':
 				self.start_pos = i
-			sentext = f'{sentext}{c}'
-		if sentext != '':
-			sentence = Sentence(sentext, 
-							start_pos=self.start_pos,
+			self.sentext = f'{self.sentext}{c}'
+		if self.sentext != '':
+			self.add_sentence(start_pos=self.start_pos,
 							dialog=self.in_quote,
+							semi_sentence=False,
 							new_paragraph=self.new_paragraph)
-			sentences.append(sentence)
-			sentext = ''
-		return sentences
+		return self.sentences
 				
 def text_to_sentences(text):
 	tp = TextParser()

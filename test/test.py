@@ -17,4 +17,4 @@ if __name__ == '__main__':
 	txt = txtfile(sys.argv[1], coding)
 	sentences = text_to_sentences(txt)
 	for s in sentences:
-		print('sentence=', s.text, len(s.text), s.dialog, s.language, s.start_pos, s.new_paragraph)
+		print('sentence=', s.text, len(s.text), s.dialog, s.lang, s.start_pos, s.new_paragraph)
