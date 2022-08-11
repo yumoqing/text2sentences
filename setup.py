@@ -2,16 +2,24 @@ try:
 	from setuptools import setup
 except ImportError:
 	from distutils.core import setup
-from text2sentences.version import __version__
 #with open('README.rst', 'r') as f:
 #	long_description = f.read()
+
+with open('text2sentences/version.py', 'r') as f:
+	x = f.read()
+	y = x[x.index("'")+1:]
+	z = y[:y.index("'")]
+	version = z
+with open("README.md", "r") as fh:
+    long_description = fh.read()
 
 setup(
 	name='text2sentences',
 	packages=['text2sentences'],
-	version=__version__,
+	version=version,
 	description='convert a long text to sentences',
-	long_description='',
+	long_description=long_description,
+	long_description_content_type="text/markdown",
 	summary='build sentence from a long text',
 	author='Yu Moqing',
 	url='https://github.com/yumoqing/text2sentences',

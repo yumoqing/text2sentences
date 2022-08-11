@@ -81,7 +81,7 @@ class TextParser:
 					self.in_quote = True
 				continue
 
-			if c in sc_punctuation and text[i+1] in [' ', '\r', '\n'] \
+			if c in sc_punctuation and i < len(text)-1 and text[i+1] in [' ', '\r', '\n'] \
 							or c in big_punctuation:
 				if self.sentext != '':
 					if c in [',','，','、']:
