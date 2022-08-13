@@ -1,6 +1,6 @@
 from .version import __version__
 from .sentence import Sentence
-from ftlangdetect import detect
+from .detectlang import detect_lang
 sc_punctuation = [
 	",",
 	".",
@@ -44,7 +44,7 @@ class TextParser:
 
 	def check_text_language(self, text):
 		x = text.replace('\r', '').replace('\n', ' ')
-		self.language = detect(x)
+		self.language = detect_lang(x)
 
 	def parse(self, text):
 		self.check_text_language(text)
