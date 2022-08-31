@@ -15,6 +15,10 @@ class Sentence:
 		self.new_paragraph = new_paragraph
 		self.language = detect_lang(text)
 		self.lang = self.language['lang']
+		self.article_id = None
+
+	def set_article_id(self, id):
+		self.article_id = id
 
 	def set_lang(self, lang):
 		if self.language['score'] < 0.5:

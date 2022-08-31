@@ -1,3 +1,4 @@
+from appPublic.uniqueID import getID
 from .version import __version__
 from .sentence import Sentence
 from .detectlang import detect_lang
@@ -39,6 +40,7 @@ class TextParser:
 							semi_sentence=semi_sentence,
 							new_paragraph=self.new_paragraph)
 			sentence.set_lang(self.language['lang'])
+			sentence.set_article_id(self.article_id)
 			self.sentences.append(sentence)
 		self.sentext = ''
 
@@ -47,6 +49,7 @@ class TextParser:
 		self.language = detect_lang(x)
 
 	def parse(self, text):
+		self.article_id = getID()
 		self.check_text_language(text)
 		self.sentences = []
 		self.sentext = ''
