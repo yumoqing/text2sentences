@@ -14,6 +14,7 @@ class Sentence:
 		self.semi_sentence=semi_sentence
 		self.new_paragraph = new_paragraph
 		self.language = detect_lang(text)
+				
 		self.lang = self.language['lang']
 		self.article_id = None
 
