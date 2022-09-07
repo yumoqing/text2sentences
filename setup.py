@@ -20,7 +20,6 @@ setup(
 	description='convert a long text to sentences',
 	long_description=long_description,
 	long_description_content_type="text/markdown",
-	summary='build sentence from a long text',
 	author='Yu Moqing',
 	url='https://github.com/yumoqing/text2sentences',
 	author_email='yumoqing@gmail.com',
