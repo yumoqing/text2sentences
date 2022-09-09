@@ -39,6 +39,7 @@ class TextParser:
 							dialog=True,
 							semi_sentence=semi_sentence,
 							new_paragraph=self.new_paragraph)
+			sentence.langdetect()
 			sentence.set_lang(self.language['lang'])
 			sentence.set_article_id(self.article_id)
 			self.sentences.append(sentence)
