@@ -20,8 +20,9 @@ big_punctuation = [
 ]
 
 class TextParser:
-	def __init__(self):
+	def __init__(self, unilang=False):
 		self.in_quote = False
+		self.unilang = unilang
 		self.quote = None
 		self.start_pos = 0
 		self.sentences = []
@@ -33,11 +34,15 @@ class TextParser:
 						dialog=None,
 						new_paragraph=False,
 						semi_sentence=False):
+		lang=None
+		if self.unilang:
+			lang = self.language['lang']
 		if self.sentext != '':
 			sentence = Sentence(self.sentext, 
 							start_pos=self.start_pos,
 							dialog=True,
 							semi_sentence=semi_sentence,
+							lang=lang,
 							new_paragraph=self.new_paragraph)
 			sentence.langdetect()
 			sentence.set_lang(self.language['lang'])
@@ -108,8 +113,8 @@ class TextParser:
 							new_paragraph=self.new_paragraph)
 		return self.sentences
 				
-def text_to_sentences(text):
-	tp = TextParser()
+def text_to_sentences(text, unilang=False):
+	tp = TextParser(unilang=unilang)
 	s = tp.parse(text)
 	return s
 

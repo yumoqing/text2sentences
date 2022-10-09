@@ -6,18 +6,26 @@ class Sentence:
 	def __init__(self, text, start_pos=0, 
 						dialog=False, 
 						semi_sentence=False, 
-						new_paragraph=True):
+						new_paragraph=True,
+						lang=None):
 		self.sentence_id = getID()
 		self.start_pos = start_pos
 		self.text = text
 		self.dialog = dialog
 		self.semi_sentence=semi_sentence
 		self.new_paragraph = new_paragraph
+		if lang:
+			self.language = {
+				'score' : 1,
+				'lang' : lang
+			}
+		self.lang = lang
 		self.article_id = None
 
 	def langdetect(self):
-		self.language = detect_lang(self.text)
-		self.lang = self.language['lang']
+		if self.lang is None:
+			self.language = detect_lang(self.text)
+			self.lang = self.language['lang']
 
 	def set_article_id(self, id):
 		self.article_id = id
